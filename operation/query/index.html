@@ -1317,6 +1317,27 @@
       
         
       <li>
+        <a href="/pscdb-v2-docs/object/employeewithjournaloption/" class="sidebar-link">
+          EmployeeWithJournalOption
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/pscdb-v2-docs/object/employeewithjournaloptionconnection/" class="sidebar-link">
+          EmployeeWithJournalOptionConnection
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/pscdb-v2-docs/object/employeewithjournaloptionedge/" class="sidebar-link">
+          EmployeeWithJournalOptionEdge
+        </a>
+      </li>
+      
+        
+      <li>
         <a href="/pscdb-v2-docs/object/enddebugloginpayload/" class="sidebar-link">
           EndDebugLoginPayload
         </a>
@@ -2166,6 +2187,27 @@
       <li>
         <a href="/pscdb-v2-docs/object/payrollbulkerror/" class="sidebar-link">
           PayrollBulkError
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/pscdb-v2-docs/object/payrollsearchoption/" class="sidebar-link">
+          PayrollSearchOption
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/pscdb-v2-docs/object/payrollsearchoptionconnection/" class="sidebar-link">
+          PayrollSearchOptionConnection
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/pscdb-v2-docs/object/payrollsearchoptionedge/" class="sidebar-link">
+          PayrollSearchOptionEdge
         </a>
       </li>
       
@@ -8967,6 +9009,59 @@
   </div>
 </div>
 <div class="field-entry ">
+  <span id="employeeswithjournaloptions" class="field-name connection-name anchored">employeesWithJournalOptions (<code><a href="/pscdb-v2-docs/object/employeewithjournaloptionconnection">EmployeeWithJournalOptionConnection!</a></code>)</span>
+  <div class="description-wrapper">
+   <p>Compact user options for the timesheet creation page</p>
+     <table class="arguments">
+  <thead>
+  <tr>
+    <th>Argument</th>
+    <th>Type</th>
+    <th>Description</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+  <td><code class="anchored">after</code></td>
+  <td>
+    <code><a href="/pscdb-v2-docs/scalar/string">String</a></code>
+  </td>
+  <td>
+    <p>Returns the elements in the list that come after the specified cursor.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">before</code></td>
+  <td>
+    <code><a href="/pscdb-v2-docs/scalar/string">String</a></code>
+  </td>
+  <td>
+    <p>Returns the elements in the list that come before the specified cursor.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">first</code></td>
+  <td>
+    <code><a href="/pscdb-v2-docs/scalar/int">Int</a></code>
+  </td>
+  <td>
+    <p>Returns the first <em>n</em> elements from the list.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">last</code></td>
+  <td>
+    <code><a href="/pscdb-v2-docs/scalar/int">Int</a></code>
+  </td>
+  <td>
+    <p>Returns the last <em>n</em> elements from the list.</p>
+   </td>
+  </tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="field-entry ">
   <span id="fansfilter" class="field-name connection-name anchored">fansFilter (<code><a href="/pscdb-v2-docs/object/fanconnection">FanConnection</a></code>)</span>
   <div class="description-wrapper">
      <table class="arguments">
@@ -10214,6 +10309,130 @@
   </td>
   <td>
     <p>Returns the last <em>n</em> elements from the list.</p>
+   </td>
+  </tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="field-entry ">
+  <span id="payrollprojectoptions" class="field-name connection-name anchored">payrollProjectOptions (<code><a href="/pscdb-v2-docs/object/payrollsearchoptionconnection">PayrollSearchOptionConnection!</a></code>)</span>
+  <div class="description-wrapper">
+   <p>Compact project options for the /payroll search pills</p>
+     <table class="arguments">
+  <thead>
+  <tr>
+    <th>Argument</th>
+    <th>Type</th>
+    <th>Description</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+  <td><code class="anchored">after</code></td>
+  <td>
+    <code><a href="/pscdb-v2-docs/scalar/string">String</a></code>
+  </td>
+  <td>
+    <p>Returns the elements in the list that come after the specified cursor.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">before</code></td>
+  <td>
+    <code><a href="/pscdb-v2-docs/scalar/string">String</a></code>
+  </td>
+  <td>
+    <p>Returns the elements in the list that come before the specified cursor.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">first</code></td>
+  <td>
+    <code><a href="/pscdb-v2-docs/scalar/int">Int</a></code>
+  </td>
+  <td>
+    <p>Returns the first <em>n</em> elements from the list.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">last</code></td>
+  <td>
+    <code><a href="/pscdb-v2-docs/scalar/int">Int</a></code>
+  </td>
+  <td>
+    <p>Returns the last <em>n</em> elements from the list.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">q</code></td>
+  <td>
+    <code><a href="/pscdb-v2-docs/scalar/string">String</a></code>
+  </td>
+  <td>
+    <p>Match any</p>
+   </td>
+  </tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="field-entry ">
+  <span id="payrolluseroptions" class="field-name connection-name anchored">payrollUserOptions (<code><a href="/pscdb-v2-docs/object/payrollsearchoptionconnection">PayrollSearchOptionConnection!</a></code>)</span>
+  <div class="description-wrapper">
+   <p>Compact user options for the /payroll search pills</p>
+     <table class="arguments">
+  <thead>
+  <tr>
+    <th>Argument</th>
+    <th>Type</th>
+    <th>Description</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+  <td><code class="anchored">after</code></td>
+  <td>
+    <code><a href="/pscdb-v2-docs/scalar/string">String</a></code>
+  </td>
+  <td>
+    <p>Returns the elements in the list that come after the specified cursor.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">before</code></td>
+  <td>
+    <code><a href="/pscdb-v2-docs/scalar/string">String</a></code>
+  </td>
+  <td>
+    <p>Returns the elements in the list that come before the specified cursor.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">first</code></td>
+  <td>
+    <code><a href="/pscdb-v2-docs/scalar/int">Int</a></code>
+  </td>
+  <td>
+    <p>Returns the first <em>n</em> elements from the list.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">last</code></td>
+  <td>
+    <code><a href="/pscdb-v2-docs/scalar/int">Int</a></code>
+  </td>
+  <td>
+    <p>Returns the last <em>n</em> elements from the list.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">q</code></td>
+  <td>
+    <code><a href="/pscdb-v2-docs/scalar/string">String</a></code>
+  </td>
+  <td>
+    <p>Match any</p>
    </td>
   </tr>
   </tbody>
@@ -12883,6 +13102,68 @@
   <td><code class="anchored">id</code></td>
   <td>
     <code><a href="/pscdb-v2-docs/scalar/id">ID!</a></code>
+  </td>
+  <td>
+   </td>
+  </tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="field-entry ">
+  <span id="payrolldepartmentoptions" class="field-name anchored">payrollDepartmentOptions (<code><a href="/pscdb-v2-docs/object/payrollsearchoption">[PayrollSearchOption!]!</a></code>)</span>
+  <div class="description-wrapper">
+   <p>Compact department options for the /payroll search pills</p>
+  </div>
+</div>
+<div class="field-entry ">
+  <span id="payrollotherassignmentoptions" class="field-name anchored">payrollOtherAssignmentOptions (<code><a href="/pscdb-v2-docs/object/payrollsearchoption">[PayrollSearchOption!]!</a></code>)</span>
+  <div class="description-wrapper">
+   <p>Compact other-assignment options for the /payroll search pills</p>
+  </div>
+</div>
+<div class="field-entry ">
+  <span id="payrollprojectoptionsbyids" class="field-name anchored">payrollProjectOptionsByIds (<code><a href="/pscdb-v2-docs/object/payrollsearchoption">[PayrollSearchOption!]!</a></code>)</span>
+  <div class="description-wrapper">
+   <p>Batch id/label hydration for previously selected /payroll project filter values</p>
+     <table class="arguments">
+  <thead>
+  <tr>
+    <th>Argument</th>
+    <th>Type</th>
+    <th>Description</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+  <td><code class="anchored">ids</code></td>
+  <td>
+    <code><a href="/pscdb-v2-docs/scalar/id">[ID!]!</a></code>
+  </td>
+  <td>
+   </td>
+  </tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="field-entry ">
+  <span id="payrolluseroptionsbyids" class="field-name anchored">payrollUserOptionsByIds (<code><a href="/pscdb-v2-docs/object/payrollsearchoption">[PayrollSearchOption!]!</a></code>)</span>
+  <div class="description-wrapper">
+   <p>Batch id/label hydration for previously selected /payroll user filter values</p>
+     <table class="arguments">
+  <thead>
+  <tr>
+    <th>Argument</th>
+    <th>Type</th>
+    <th>Description</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+  <td><code class="anchored">ids</code></td>
+  <td>
+    <code><a href="/pscdb-v2-docs/scalar/id">[ID!]!</a></code>
   </td>
   <td>
    </td>
