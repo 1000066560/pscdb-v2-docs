@@ -3,22 +3,151 @@
   <head>
     <meta charset="utf-8">
     <meta name="description" content="UpdateMiscellaneousJobInput GraphQL documentation">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>UpdateMiscellaneousJobInput</title>
     <link rel="stylesheet" href="/pscdb-v2-docs/assets/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
     <script>
 
-    // Add anchors on DOMContentLoaded
     document.addEventListener("DOMContentLoaded", function(event) {
+      // Add anchors
       anchors.options = {
         placement: 'left',
         visible: 'hover',
         icon: '¶'
       };
       anchors.add('h2, h3, h4, h5, h6, .anchored');
+
+      // Add listener for search filter input
+      const sidebarDiv = document.getElementById('sidebar');
+      const searchDiv = sidebarDiv.querySelector('#search')
+
+      if (searchDiv) {
+        const searchInput = searchDiv.querySelector('input');
+        const menuElements = sidebarDiv.querySelectorAll('ul.menu-root');
+
+        const listener = debounce((event) => {
+          const searchValue = event.target.value;
+          applySearchFilter(searchValue, menuElements)
+        }, 500);
+
+        searchInput.addEventListener('input', listener);
+      }
+
+      // Resize sidebar functionality
+      initializeSidebarResize();
     });
 
+    function initializeSidebarResize() {
+      const sidebar = document.getElementById('sidebar');
+      if (!sidebar) {
+        return;
+      }
+
+      const minWidth = 200;
+      const maxWidth = 350;
+
+      // Restore saved width from sessionStorage
+      const savedWidth = sessionStorage.getItem('sidebarWidth');
+      if (savedWidth) {
+        sidebar.style.width = savedWidth;
+      }
+
+      // Create resize handle as a sibling to sidebar (not inside it)
+      const resizeHandle = document.createElement('div');
+      resizeHandle.className = 'resize-handle';
+
+      // Position handle at current sidebar width
+      if (savedWidth) {
+        resizeHandle.style.left = savedWidth;
+      }
+
+      // Insert after sidebar
+      sidebar.parentNode.insertBefore(resizeHandle, sidebar.nextSibling);
+
+      // Track resize state
+      let isResizing = false;
+      let startX = 0;
+      let startWidth = 0;
+
+      // Mouse down on handle
+      resizeHandle.addEventListener('mousedown', function(e) {
+        isResizing = true;
+        startX = e.clientX;
+        startWidth = sidebar.offsetWidth;
+
+        // Prevent text selection while dragging
+        e.preventDefault();
+        document.body.style.userSelect = 'none';
+        document.body.style.cursor = 'ew-resize';
+      });
+
+      // Mouse move
+      document.addEventListener('mousemove', function(e) {
+        if (!isResizing) return;
+
+        const dx = e.clientX - startX;
+        const newWidth = startWidth + dx;
+
+        // Apply constraints
+        if (newWidth >= minWidth && newWidth <= maxWidth) {
+          sidebar.style.width = newWidth + 'px';
+          resizeHandle.style.left = newWidth + 'px';
+        }
+      });
+
+      // Mouse up
+      document.addEventListener('mouseup', function() {
+        if (isResizing) {
+          isResizing = false;
+          document.body.style.userSelect = '';
+          document.body.style.cursor = '';
+
+          // Save the new width to sessionStorage
+          sessionStorage.setItem('sidebarWidth', sidebar.style.width);
+        }
+      });
+    }
+
+    function debounce(func, wait) {
+      let timeout;
+
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+
+    function applySearchFilter(searchValue, menuElements) {
+      menuElements.forEach(menuElement => {
+        const listElements = menuElement.getElementsByTagName('li');
+        let hasVisibleElements = false;
+        Array.from(listElements).forEach(listElement => {
+          let contains = true
+          if (searchValue.length > 0) {
+            const anchorElement = listElement.querySelector('a');
+            const textContent = anchorElement.innerText;
+            contains = textContent.toLowerCase().includes(searchValue.toLowerCase());
+          }
+
+          // Hide the list element if its text does not contain the search value
+          listElement.style.display = contains ? '' : 'none';
+
+          if (contains) {
+            hasVisibleElements = true;
+          }
+        });
+
+        // Hide the entire menu if none of the list items are visible
+        const menuParentElement = menuElement.closest('li')
+        menuParentElement.style.display = hasVisibleElements ? '' : 'none';
+      });
+    }
     </script>
   </head>
   <body>
@@ -27,7 +156,13 @@
       <div id="header">
       </div>
       <div id="sidebar">
-        <ul class="categories">
+        <div id="search">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14" />
+  </svg>
+  <input autocomplete="off" placeholder="Search" />
+</div>
+<ul class="categories">
   <li>
     <ul class="menu-root">
       <li>
@@ -36,7 +171,7 @@
   </li>
 
   <li>
-    <p>Queries</p>
+    <p>Operations</p>
     <ul class="menu-root">
       <li>
         <a href="/pscdb-v2-docs/operation/query/" class="sidebar-link">
@@ -48,6 +183,2624 @@
           Mutation
         </a>
       </li>
+    </ul>
+  </li>
+
+  <li>
+    <p><a href="/pscdb-v2-docs/operation/query">Queries</a></p>
+    <ul class="menu-root">
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/allihmddocuments/" class="sidebar-link">
+          allIhmdDocuments
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/allusers/" class="sidebar-link">
+          allUsers
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/archiveusers/" class="sidebar-link">
+          archiveUsers
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/archivesfilter/" class="sidebar-link">
+          archivesFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/availabledepartments/" class="sidebar-link">
+          availableDepartments
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/availablematerials/" class="sidebar-link">
+          availableMaterials
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/boiler/" class="sidebar-link">
+          boiler
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/boilersfilter/" class="sidebar-link">
+          boilersFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/branch/" class="sidebar-link">
+          branch
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/branches/" class="sidebar-link">
+          branches
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/branchesfilter/" class="sidebar-link">
+          branchesFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/building/" class="sidebar-link">
+          building
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/buildingfilterfields/" class="sidebar-link">
+          buildingFilterFields
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/buildingfilterpresets/" class="sidebar-link">
+          buildingFilterPresets
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/buildingoptions/" class="sidebar-link">
+          buildingOptions
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/buildings/" class="sidebar-link">
+          buildings
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/buildingsfilter/" class="sidebar-link">
+          buildingsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/capexjob/" class="sidebar-link">
+          capexJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/capexjobsfilter/" class="sidebar-link">
+          capexJobsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/card/" class="sidebar-link">
+          card
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/cardsfilter/" class="sidebar-link">
+          cardsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/chiller/" class="sidebar-link">
+          chiller
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/chillersfilter/" class="sidebar-link">
+          chillersFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/cities/" class="sidebar-link">
+          cities
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/citiesfilter/" class="sidebar-link">
+          citiesFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/city/" class="sidebar-link">
+          city
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/contactinformation/" class="sidebar-link">
+          contactInformation
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/contactinformations/" class="sidebar-link">
+          contactInformations
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/coolingtower/" class="sidebar-link">
+          coolingTower
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/coolingtowersfilter/" class="sidebar-link">
+          coolingTowersFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/department/" class="sidebar-link">
+          department
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/departments/" class="sidebar-link">
+          departments
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/departmentsfilter/" class="sidebar-link">
+          departmentsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/document/" class="sidebar-link">
+          document
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/documentoptions/" class="sidebar-link">
+          documentOptions
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/documentsfilter/" class="sidebar-link">
+          documentsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/ductcleaningjob/" class="sidebar-link">
+          ductCleaningJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/ductcleaningjobsfilter/" class="sidebar-link">
+          ductCleaningJobsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/employeeswithjournaloptions/" class="sidebar-link">
+          employeesWithJournalOptions
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/fan/" class="sidebar-link">
+          fan
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/fansfilter/" class="sidebar-link">
+          fansFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/fiscal/" class="sidebar-link">
+          fiscal
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/fiscals/" class="sidebar-link">
+          fiscals
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/fiscalsfilter/" class="sidebar-link">
+          fiscalsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/flooringjob/" class="sidebar-link">
+          flooringJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/flooringjobsfilter/" class="sidebar-link">
+          flooringJobsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/forecast/" class="sidebar-link">
+          forecast
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/forecastexists/" class="sidebar-link">
+          forecastExists
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/forecastsfilter/" class="sidebar-link">
+          forecastsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/holidaysfilter/" class="sidebar-link">
+          holidaysFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/ihmddocument/" class="sidebar-link">
+          ihmdDocument
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/ihmddocumentfilterfields/" class="sidebar-link">
+          ihmdDocumentFilterFields
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/job/" class="sidebar-link">
+          job
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/jobimport/" class="sidebar-link">
+          jobImport
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/jobimportmappingoptions/" class="sidebar-link">
+          jobImportMappingOptions
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/jobimportrowcount/" class="sidebar-link">
+          jobImportRowCount
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/jobimportrows/" class="sidebar-link">
+          jobImportRows
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/jobimportstate/" class="sidebar-link">
+          jobImportState
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/jobimportstatus/" class="sidebar-link">
+          jobImportStatus
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/jobimports/" class="sidebar-link">
+          jobImports
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/jobstatusoptions/" class="sidebar-link">
+          jobStatusOptions
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/jobstatuses/" class="sidebar-link">
+          jobStatuses
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/jobtypeoptions/" class="sidebar-link">
+          jobTypeOptions
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/jobsfilter/" class="sidebar-link">
+          jobsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/journal/" class="sidebar-link">
+          journal
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/journalentryfilter/" class="sidebar-link">
+          journalEntryFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/journalfilter/" class="sidebar-link">
+          journalFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/material/" class="sidebar-link">
+          material
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/materiallist/" class="sidebar-link">
+          materialList
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/materiallists/" class="sidebar-link">
+          materialLists
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/materiallistsfilter/" class="sidebar-link">
+          materialListsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/materialquantity/" class="sidebar-link">
+          materialQuantity
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/materialquantityfilter/" class="sidebar-link">
+          materialQuantityFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/materials/" class="sidebar-link">
+          materials
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/materialsfilter/" class="sidebar-link">
+          materialsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/me/" class="sidebar-link">
+          me
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/mileage/" class="sidebar-link">
+          mileage
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/mileageoptions/" class="sidebar-link">
+          mileageOptions
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/mileagevehiclefilter/" class="sidebar-link">
+          mileageVehicleFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/mileagesfilter/" class="sidebar-link">
+          mileagesFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/miscellaneousjob/" class="sidebar-link">
+          miscellaneousJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/miscellaneousjobsfilter/" class="sidebar-link">
+          miscellaneousJobsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/mua/" class="sidebar-link">
+          mua
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/muasfilter/" class="sidebar-link">
+          muasFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newamenity/" class="sidebar-link">
+          newAmenity
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newbalconysystem/" class="sidebar-link">
+          newBalconySystem
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newbuilding/" class="sidebar-link">
+          newBuilding
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newbuildingfeatures/" class="sidebar-link">
+          newBuildingFeatures
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newcontactinformation/" class="sidebar-link">
+          newContactInformation
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newdocument/" class="sidebar-link">
+          newDocument
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newelectrical/" class="sidebar-link">
+          newElectrical
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newelevator/" class="sidebar-link">
+          newElevator
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newemergencypower/" class="sidebar-link">
+          newEmergencyPower
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newfirealarmsystem/" class="sidebar-link">
+          newFireAlarmSystem
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newforecast/" class="sidebar-link">
+          newForecast
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newheating/" class="sidebar-link">
+          newHeating
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newihmddocument/" class="sidebar-link">
+          newIhmdDocument
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newjournal/" class="sidebar-link">
+          newJournal
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newlocate/" class="sidebar-link">
+          newLocate
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newmaterial/" class="sidebar-link">
+          newMaterial
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newmateriallist/" class="sidebar-link">
+          newMaterialList
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newotherassignment/" class="sidebar-link">
+          newOtherAssignment
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newparking/" class="sidebar-link">
+          newParking
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newpermissionset/" class="sidebar-link">
+          newPermissionSet
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newportfolio/" class="sidebar-link">
+          newPortfolio
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newproject/" class="sidebar-link">
+          newProject
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newroof/" class="sidebar-link">
+          newRoof
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newserviceticket/" class="sidebar-link">
+          newServiceTicket
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newshop/" class="sidebar-link">
+          newShop
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newstructure/" class="sidebar-link">
+          newStructure
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newtool/" class="sidebar-link">
+          newTool
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newunit/" class="sidebar-link">
+          newUnit
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newuser/" class="sidebar-link">
+          newUser
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/newwindowanddoor/" class="sidebar-link">
+          newWindowAndDoor
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/oncall/" class="sidebar-link">
+          onCall
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/oncallshiftsfilter/" class="sidebar-link">
+          onCallShiftsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/otherassignment/" class="sidebar-link">
+          otherAssignment
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/otherassignmentfilter/" class="sidebar-link">
+          otherAssignmentFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/otherassignments/" class="sidebar-link">
+          otherAssignments
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/ottawamaintenanceplan/" class="sidebar-link">
+          ottawaMaintenancePlan
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/paintingjob/" class="sidebar-link">
+          paintingJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/paintingjobsfilter/" class="sidebar-link">
+          paintingJobsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/payrolldepartmentoptions/" class="sidebar-link">
+          payrollDepartmentOptions
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/payrollotherassignmentoptions/" class="sidebar-link">
+          payrollOtherAssignmentOptions
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/payrollprojectoptions/" class="sidebar-link">
+          payrollProjectOptions
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/payrollprojectoptionsbyids/" class="sidebar-link">
+          payrollProjectOptionsByIds
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/payrolluseroptions/" class="sidebar-link">
+          payrollUserOptions
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/payrolluseroptionsbyids/" class="sidebar-link">
+          payrollUserOptionsByIds
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/permissionset/" class="sidebar-link">
+          permissionSet
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/permissionsetfilter/" class="sidebar-link">
+          permissionSetFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/permissionsets/" class="sidebar-link">
+          permissionSets
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/pooldehumidification/" class="sidebar-link">
+          poolDehumidification
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/pooldehumidificationsfilter/" class="sidebar-link">
+          poolDehumidificationsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/portfolio/" class="sidebar-link">
+          portfolio
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/portfoliosfilter/" class="sidebar-link">
+          portfoliosFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/project/" class="sidebar-link">
+          project
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/projects/" class="sidebar-link">
+          projects
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/projectsfilter/" class="sidebar-link">
+          projectsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/pump/" class="sidebar-link">
+          pump
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/pumpsfilter/" class="sidebar-link">
+          pumpsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/remindersfilter/" class="sidebar-link">
+          remindersFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/repair/" class="sidebar-link">
+          repair
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/rollup/" class="sidebar-link">
+          rollup
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/search/" class="sidebar-link">
+          search
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/searchfilterpresets/" class="sidebar-link">
+          searchFilterPresets
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/serviceticket/" class="sidebar-link">
+          serviceTicket
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/serviceticketsfilter/" class="sidebar-link">
+          serviceTicketsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/shop/" class="sidebar-link">
+          shop
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/shopsfilter/" class="sidebar-link">
+          shopsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/stackcleaningjob/" class="sidebar-link">
+          stackCleaningJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/stackcleaningjobsfilter/" class="sidebar-link">
+          stackCleaningJobsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/storagetank/" class="sidebar-link">
+          storageTank
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/storagetanksfilter/" class="sidebar-link">
+          storageTanksFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/timesheet/" class="sidebar-link">
+          timesheet
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/timesheetjournalsfilter/" class="sidebar-link">
+          timesheetJournalsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/timesheetsfilter/" class="sidebar-link">
+          timesheetsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/tool/" class="sidebar-link">
+          tool
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/toolevent/" class="sidebar-link">
+          toolEvent
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/tooleventsfilter/" class="sidebar-link">
+          toolEventsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/toolrepairsfilter/" class="sidebar-link">
+          toolRepairsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/toolsfilter/" class="sidebar-link">
+          toolsFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/unassignedcities/" class="sidebar-link">
+          unassignedCities
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/user/" class="sidebar-link">
+          user
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/userarchivefilter/" class="sidebar-link">
+          userArchiveFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/users/" class="sidebar-link">
+          users
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/usersfilter/" class="sidebar-link">
+          usersFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/userswithvehicles/" class="sidebar-link">
+          usersWithVehicles
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/utilitiesfilter/" class="sidebar-link">
+          utilitiesFilter
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/utilityoptions/" class="sidebar-link">
+          utilityOptions
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/vehicle/" class="sidebar-link">
+          vehicle
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/vehiclefilteroptions/" class="sidebar-link">
+          vehicleFilterOptions
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/vehicleoptions/" class="sidebar-link">
+          vehicleOptions
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/query/vehiclesfilter/" class="sidebar-link">
+          vehiclesFilter
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+
+  <li>
+    <p><a href="/pscdb-v2-docs/operation/mutation">Mutations</a></p>
+    <ul class="menu-root">
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/adjustoncall/" class="sidebar-link">
+          adjustOnCall
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/approvejournalentries/" class="sidebar-link">
+          approveJournalEntries
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/archivejournals/" class="sidebar-link">
+          archiveJournals
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/archivetimesheet/" class="sidebar-link">
+          archiveTimesheet
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/bulkboilers/" class="sidebar-link">
+          bulkBoilers
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/bulkchillers/" class="sidebar-link">
+          bulkChillers
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/bulkcoolingtowers/" class="sidebar-link">
+          bulkCoolingTowers
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/bulkfans/" class="sidebar-link">
+          bulkFans
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/bulkmuas/" class="sidebar-link">
+          bulkMuas
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/bulkpooldehumidifications/" class="sidebar-link">
+          bulkPoolDehumidifications
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/bulkpumps/" class="sidebar-link">
+          bulkPumps
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/bulkstoragetanks/" class="sidebar-link">
+          bulkStorageTanks
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/bulkupdatejobimportrows/" class="sidebar-link">
+          bulkUpdateJobImportRows
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/commitjobimport/" class="sidebar-link">
+          commitJobImport
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/completecredential/" class="sidebar-link">
+          completeCredential
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/completetwofactor/" class="sidebar-link">
+          completeTwoFactor
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createarchive/" class="sidebar-link">
+          createArchive
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createarchivesummary/" class="sidebar-link">
+          createArchiveSummary
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createboiler/" class="sidebar-link">
+          createBoiler
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createbranch/" class="sidebar-link">
+          createBranch
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createbuilding/" class="sidebar-link">
+          createBuilding
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createbuildingfilterpreset/" class="sidebar-link">
+          createBuildingFilterPreset
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createcapexjob/" class="sidebar-link">
+          createCapexJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createcard/" class="sidebar-link">
+          createCard
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createchiller/" class="sidebar-link">
+          createChiller
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createcity/" class="sidebar-link">
+          createCity
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createcoolingtower/" class="sidebar-link">
+          createCoolingTower
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createdepartment/" class="sidebar-link">
+          createDepartment
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createdocument/" class="sidebar-link">
+          createDocument
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createductcleaningjob/" class="sidebar-link">
+          createDuctCleaningJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createfan/" class="sidebar-link">
+          createFan
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createfiscal/" class="sidebar-link">
+          createFiscal
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createflooringjob/" class="sidebar-link">
+          createFlooringJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createforecast/" class="sidebar-link">
+          createForecast
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createihmddocument/" class="sidebar-link">
+          createIhmdDocument
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createjobimport/" class="sidebar-link">
+          createJobImport
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createjournal/" class="sidebar-link">
+          createJournal
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/creatematerial/" class="sidebar-link">
+          createMaterial
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createmateriallist/" class="sidebar-link">
+          createMaterialList
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/creatematerialquantity/" class="sidebar-link">
+          createMaterialQuantity
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createmileage/" class="sidebar-link">
+          createMileage
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createmileageexport/" class="sidebar-link">
+          createMileageExport
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createmiscellaneousjob/" class="sidebar-link">
+          createMiscellaneousJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createmua/" class="sidebar-link">
+          createMua
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createoncall/" class="sidebar-link">
+          createOnCall
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createotherassignment/" class="sidebar-link">
+          createOtherAssignment
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createottawamaintenanceplan/" class="sidebar-link">
+          createOttawaMaintenancePlan
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createpaintingjob/" class="sidebar-link">
+          createPaintingJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createpermissionset/" class="sidebar-link">
+          createPermissionSet
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createpermissionsetfromlist/" class="sidebar-link">
+          createPermissionSetFromList
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createpooldehumidification/" class="sidebar-link">
+          createPoolDehumidification
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createportfolio/" class="sidebar-link">
+          createPortfolio
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createpowerautomatetimesheet/" class="sidebar-link">
+          createPowerAutomateTimesheet
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createproject/" class="sidebar-link">
+          createProject
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createpump/" class="sidebar-link">
+          createPump
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createsearchfilterpreset/" class="sidebar-link">
+          createSearchFilterPreset
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createserviceticket/" class="sidebar-link">
+          createServiceTicket
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createshop/" class="sidebar-link">
+          createShop
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createstackcleaningjob/" class="sidebar-link">
+          createStackCleaningJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createstoragetank/" class="sidebar-link">
+          createStorageTank
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createsupportticket/" class="sidebar-link">
+          createSupportTicket
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createtimesheet/" class="sidebar-link">
+          createTimesheet
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createtool/" class="sidebar-link">
+          createTool
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createtoolrepair/" class="sidebar-link">
+          createToolRepair
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createuser/" class="sidebar-link">
+          createUser
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/createvehicle/" class="sidebar-link">
+          createVehicle
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/debuglogin/" class="sidebar-link">
+          debugLogin
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroyboiler/" class="sidebar-link">
+          destroyBoiler
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroybranch/" class="sidebar-link">
+          destroyBranch
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroybuilding/" class="sidebar-link">
+          destroyBuilding
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroybuildingfilterpreset/" class="sidebar-link">
+          destroyBuildingFilterPreset
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroycapexjob/" class="sidebar-link">
+          destroyCapexJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroycard/" class="sidebar-link">
+          destroyCard
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroychiller/" class="sidebar-link">
+          destroyChiller
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroycity/" class="sidebar-link">
+          destroyCity
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroycoolingtower/" class="sidebar-link">
+          destroyCoolingTower
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroycredential/" class="sidebar-link">
+          destroyCredential
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroydepartment/" class="sidebar-link">
+          destroyDepartment
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroydocument/" class="sidebar-link">
+          destroyDocument
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroyductcleaningjob/" class="sidebar-link">
+          destroyDuctCleaningJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroyfan/" class="sidebar-link">
+          destroyFan
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroyfiscal/" class="sidebar-link">
+          destroyFiscal
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroyflooringjob/" class="sidebar-link">
+          destroyFlooringJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroyforecast/" class="sidebar-link">
+          destroyForecast
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroyihmddocument/" class="sidebar-link">
+          destroyIhmdDocument
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroyjournal/" class="sidebar-link">
+          destroyJournal
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroyjournalentry/" class="sidebar-link">
+          destroyJournalEntry
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroymaterial/" class="sidebar-link">
+          destroyMaterial
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroymateriallist/" class="sidebar-link">
+          destroyMaterialList
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroymaterialquantity/" class="sidebar-link">
+          destroyMaterialQuantity
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroymileage/" class="sidebar-link">
+          destroyMileage
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroymiscellaneousjob/" class="sidebar-link">
+          destroyMiscellaneousJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroymua/" class="sidebar-link">
+          destroyMua
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroyoncall/" class="sidebar-link">
+          destroyOnCall
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroyotherassignment/" class="sidebar-link">
+          destroyOtherAssignment
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroyottawamaintenanceplan/" class="sidebar-link">
+          destroyOttawaMaintenancePlan
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroypaintingjob/" class="sidebar-link">
+          destroyPaintingJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroypermissionset/" class="sidebar-link">
+          destroyPermissionSet
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroypooldehumidification/" class="sidebar-link">
+          destroyPoolDehumidification
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroyportfolio/" class="sidebar-link">
+          destroyPortfolio
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroyproject/" class="sidebar-link">
+          destroyProject
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroypump/" class="sidebar-link">
+          destroyPump
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroysearchfilterpreset/" class="sidebar-link">
+          destroySearchFilterPreset
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroyserviceticket/" class="sidebar-link">
+          destroyServiceTicket
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroyshop/" class="sidebar-link">
+          destroyShop
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroystackcleaningjob/" class="sidebar-link">
+          destroyStackCleaningJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroystoragetank/" class="sidebar-link">
+          destroyStorageTank
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroytimesheet/" class="sidebar-link">
+          destroyTimesheet
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroytool/" class="sidebar-link">
+          destroyTool
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroytoolrepair/" class="sidebar-link">
+          destroyToolRepair
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroyuser/" class="sidebar-link">
+          destroyUser
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/destroyvehicle/" class="sidebar-link">
+          destroyVehicle
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/devicesignout/" class="sidebar-link">
+          deviceSignout
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/discardjobimport/" class="sidebar-link">
+          discardJobImport
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/enddebuglogin/" class="sidebar-link">
+          endDebugLogin
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/exportfiscal/" class="sidebar-link">
+          exportFiscal
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/favorite/" class="sidebar-link">
+          favorite
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/favoritebuildingfilterpreset/" class="sidebar-link">
+          favoriteBuildingFilterPreset
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/favoritesearchfilterpreset/" class="sidebar-link">
+          favoriteSearchFilterPreset
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/importcapexjob/" class="sidebar-link">
+          importCapexJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/importductcleaningjob/" class="sidebar-link">
+          importDuctCleaningJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/importflooringjob/" class="sidebar-link">
+          importFlooringJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/importjob/" class="sidebar-link">
+          importJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/importmiscellaneousjob/" class="sidebar-link">
+          importMiscellaneousJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/importpaintingjob/" class="sidebar-link">
+          importPaintingJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/importprojects/" class="sidebar-link">
+          importProjects
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/importstackcleaningjob/" class="sidebar-link">
+          importStackCleaningJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/importutilities/" class="sidebar-link">
+          importUtilities
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/initiatecredential/" class="sidebar-link">
+          initiateCredential
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/moveoncall/" class="sidebar-link">
+          moveOnCall
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/removefavorite/" class="sidebar-link">
+          removeFavorite
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/requestresetpassword/" class="sidebar-link">
+          requestResetPassword
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/resetpassword/" class="sidebar-link">
+          resetPassword
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/signintool/" class="sidebar-link">
+          signInTool
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/signouttool/" class="sidebar-link">
+          signOutTool
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/unfavoritebuildingfilterpreset/" class="sidebar-link">
+          unfavoriteBuildingFilterPreset
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/unfavoritesearchfilterpreset/" class="sidebar-link">
+          unfavoriteSearchFilterPreset
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updateboiler/" class="sidebar-link">
+          updateBoiler
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatebranch/" class="sidebar-link">
+          updateBranch
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatebuilding/" class="sidebar-link">
+          updateBuilding
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatebuildingamenity/" class="sidebar-link">
+          updateBuildingAmenity
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatebuildingbalconysystem/" class="sidebar-link">
+          updateBuildingBalconySystem
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatebuildingcontactinformation/" class="sidebar-link">
+          updateBuildingContactInformation
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatebuildingcontractinformation/" class="sidebar-link">
+          updateBuildingContractInformation
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatebuildingelectrical/" class="sidebar-link">
+          updateBuildingElectrical
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatebuildingelevator/" class="sidebar-link">
+          updateBuildingElevator
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatebuildingemergencypower/" class="sidebar-link">
+          updateBuildingEmergencyPower
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatebuildingfeature/" class="sidebar-link">
+          updateBuildingFeature
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatebuildingfilterpreset/" class="sidebar-link">
+          updateBuildingFilterPreset
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatebuildingfirealarmsystem/" class="sidebar-link">
+          updateBuildingFireAlarmSystem
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatebuildingheating/" class="sidebar-link">
+          updateBuildingHeating
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatebuildinglocate/" class="sidebar-link">
+          updateBuildingLocate
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatebuildingparking/" class="sidebar-link">
+          updateBuildingParking
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatebuildingroof/" class="sidebar-link">
+          updateBuildingRoof
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatebuildingstructure/" class="sidebar-link">
+          updateBuildingStructure
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatebuildingunit/" class="sidebar-link">
+          updateBuildingUnit
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatebuildingwindowanddoor/" class="sidebar-link">
+          updateBuildingWindowAndDoor
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatecapexjob/" class="sidebar-link">
+          updateCapexJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatecard/" class="sidebar-link">
+          updateCard
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatechiller/" class="sidebar-link">
+          updateChiller
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatecity/" class="sidebar-link">
+          updateCity
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatecoolingtower/" class="sidebar-link">
+          updateCoolingTower
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatedepartment/" class="sidebar-link">
+          updateDepartment
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatedocument/" class="sidebar-link">
+          updateDocument
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updateductcleaningjob/" class="sidebar-link">
+          updateDuctCleaningJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatefan/" class="sidebar-link">
+          updateFan
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatefiscal/" class="sidebar-link">
+          updateFiscal
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updateflooringjob/" class="sidebar-link">
+          updateFlooringJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updateforecast/" class="sidebar-link">
+          updateForecast
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updateihmddocument/" class="sidebar-link">
+          updateIhmdDocument
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatejobimportmapping/" class="sidebar-link">
+          updateJobImportMapping
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatejobimportmappings/" class="sidebar-link">
+          updateJobImportMappings
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatejobimportrow/" class="sidebar-link">
+          updateJobImportRow
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatejournal/" class="sidebar-link">
+          updateJournal
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatematerial/" class="sidebar-link">
+          updateMaterial
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatemateriallist/" class="sidebar-link">
+          updateMaterialList
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatematerialquantity/" class="sidebar-link">
+          updateMaterialQuantity
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatemileage/" class="sidebar-link">
+          updateMileage
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatemiscellaneousjob/" class="sidebar-link">
+          updateMiscellaneousJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatemua/" class="sidebar-link">
+          updateMua
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updateoncall/" class="sidebar-link">
+          updateOnCall
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updateotherassignment/" class="sidebar-link">
+          updateOtherAssignment
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updateottawamaintenanceplan/" class="sidebar-link">
+          updateOttawaMaintenancePlan
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatepaintingjob/" class="sidebar-link">
+          updatePaintingJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatepermissionset/" class="sidebar-link">
+          updatePermissionSet
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatepooldehumidification/" class="sidebar-link">
+          updatePoolDehumidification
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updateportfolio/" class="sidebar-link">
+          updatePortfolio
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updateproject/" class="sidebar-link">
+          updateProject
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatepump/" class="sidebar-link">
+          updatePump
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatesearchfilterpreset/" class="sidebar-link">
+          updateSearchFilterPreset
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updateserviceticket/" class="sidebar-link">
+          updateServiceTicket
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updateshop/" class="sidebar-link">
+          updateShop
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatestackcleaningjob/" class="sidebar-link">
+          updateStackCleaningJob
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatestoragetank/" class="sidebar-link">
+          updateStorageTank
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatetool/" class="sidebar-link">
+          updateTool
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatetoolrepair/" class="sidebar-link">
+          updateToolRepair
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updateuser/" class="sidebar-link">
+          updateUser
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updateuserpassword/" class="sidebar-link">
+          updateUserPassword
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/mutation/updatevehicle/" class="sidebar-link">
+          updateVehicle
+        </a>
+      </li>
+      
     </ul>
   </li>
 
@@ -3356,1406 +6109,6 @@
       <li>
         <a href="/pscdb-v2-docs/object/__type/" class="sidebar-link">
           __Type
-        </a>
-      </li>
-      
-    </ul>
-  </li>
-
-  <li>
-    <p><a href="/pscdb-v2-docs/operation/mutation">Mutations</a></p>
-    <ul class="menu-root">
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/adjustoncall/" class="sidebar-link">
-          adjustOnCall
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/approvejournalentries/" class="sidebar-link">
-          approveJournalEntries
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/archivejournals/" class="sidebar-link">
-          archiveJournals
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/archivetimesheet/" class="sidebar-link">
-          archiveTimesheet
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/bulkboilers/" class="sidebar-link">
-          bulkBoilers
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/bulkchillers/" class="sidebar-link">
-          bulkChillers
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/bulkcoolingtowers/" class="sidebar-link">
-          bulkCoolingTowers
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/bulkfans/" class="sidebar-link">
-          bulkFans
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/bulkmuas/" class="sidebar-link">
-          bulkMuas
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/bulkpooldehumidifications/" class="sidebar-link">
-          bulkPoolDehumidifications
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/bulkpumps/" class="sidebar-link">
-          bulkPumps
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/bulkstoragetanks/" class="sidebar-link">
-          bulkStorageTanks
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/bulkupdatejobimportrows/" class="sidebar-link">
-          bulkUpdateJobImportRows
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/commitjobimport/" class="sidebar-link">
-          commitJobImport
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/completecredential/" class="sidebar-link">
-          completeCredential
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/completetwofactor/" class="sidebar-link">
-          completeTwoFactor
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createarchive/" class="sidebar-link">
-          createArchive
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createarchivesummary/" class="sidebar-link">
-          createArchiveSummary
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createboiler/" class="sidebar-link">
-          createBoiler
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createbranch/" class="sidebar-link">
-          createBranch
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createbuilding/" class="sidebar-link">
-          createBuilding
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createbuildingfilterpreset/" class="sidebar-link">
-          createBuildingFilterPreset
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createcapexjob/" class="sidebar-link">
-          createCapexJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createcard/" class="sidebar-link">
-          createCard
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createchiller/" class="sidebar-link">
-          createChiller
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createcity/" class="sidebar-link">
-          createCity
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createcoolingtower/" class="sidebar-link">
-          createCoolingTower
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createdepartment/" class="sidebar-link">
-          createDepartment
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createdocument/" class="sidebar-link">
-          createDocument
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createductcleaningjob/" class="sidebar-link">
-          createDuctCleaningJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createfan/" class="sidebar-link">
-          createFan
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createfiscal/" class="sidebar-link">
-          createFiscal
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createflooringjob/" class="sidebar-link">
-          createFlooringJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createforecast/" class="sidebar-link">
-          createForecast
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createihmddocument/" class="sidebar-link">
-          createIhmdDocument
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createjobimport/" class="sidebar-link">
-          createJobImport
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createjournal/" class="sidebar-link">
-          createJournal
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/creatematerial/" class="sidebar-link">
-          createMaterial
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createmateriallist/" class="sidebar-link">
-          createMaterialList
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/creatematerialquantity/" class="sidebar-link">
-          createMaterialQuantity
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createmileage/" class="sidebar-link">
-          createMileage
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createmileageexport/" class="sidebar-link">
-          createMileageExport
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createmiscellaneousjob/" class="sidebar-link">
-          createMiscellaneousJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createmua/" class="sidebar-link">
-          createMua
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createoncall/" class="sidebar-link">
-          createOnCall
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createotherassignment/" class="sidebar-link">
-          createOtherAssignment
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createottawamaintenanceplan/" class="sidebar-link">
-          createOttawaMaintenancePlan
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createpaintingjob/" class="sidebar-link">
-          createPaintingJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createpermissionset/" class="sidebar-link">
-          createPermissionSet
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createpermissionsetfromlist/" class="sidebar-link">
-          createPermissionSetFromList
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createpooldehumidification/" class="sidebar-link">
-          createPoolDehumidification
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createportfolio/" class="sidebar-link">
-          createPortfolio
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createpowerautomatetimesheet/" class="sidebar-link">
-          createPowerAutomateTimesheet
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createproject/" class="sidebar-link">
-          createProject
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createpump/" class="sidebar-link">
-          createPump
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createsearchfilterpreset/" class="sidebar-link">
-          createSearchFilterPreset
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createserviceticket/" class="sidebar-link">
-          createServiceTicket
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createshop/" class="sidebar-link">
-          createShop
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createstackcleaningjob/" class="sidebar-link">
-          createStackCleaningJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createstoragetank/" class="sidebar-link">
-          createStorageTank
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createsupportticket/" class="sidebar-link">
-          createSupportTicket
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createtimesheet/" class="sidebar-link">
-          createTimesheet
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createtool/" class="sidebar-link">
-          createTool
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createtoolrepair/" class="sidebar-link">
-          createToolRepair
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createuser/" class="sidebar-link">
-          createUser
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/createvehicle/" class="sidebar-link">
-          createVehicle
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/debuglogin/" class="sidebar-link">
-          debugLogin
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroyboiler/" class="sidebar-link">
-          destroyBoiler
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroybranch/" class="sidebar-link">
-          destroyBranch
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroybuilding/" class="sidebar-link">
-          destroyBuilding
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroybuildingfilterpreset/" class="sidebar-link">
-          destroyBuildingFilterPreset
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroycapexjob/" class="sidebar-link">
-          destroyCapexJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroycard/" class="sidebar-link">
-          destroyCard
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroychiller/" class="sidebar-link">
-          destroyChiller
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroycity/" class="sidebar-link">
-          destroyCity
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroycoolingtower/" class="sidebar-link">
-          destroyCoolingTower
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroycredential/" class="sidebar-link">
-          destroyCredential
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroydepartment/" class="sidebar-link">
-          destroyDepartment
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroydocument/" class="sidebar-link">
-          destroyDocument
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroyductcleaningjob/" class="sidebar-link">
-          destroyDuctCleaningJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroyfan/" class="sidebar-link">
-          destroyFan
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroyfiscal/" class="sidebar-link">
-          destroyFiscal
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroyflooringjob/" class="sidebar-link">
-          destroyFlooringJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroyforecast/" class="sidebar-link">
-          destroyForecast
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroyihmddocument/" class="sidebar-link">
-          destroyIhmdDocument
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroyjournal/" class="sidebar-link">
-          destroyJournal
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroyjournalentry/" class="sidebar-link">
-          destroyJournalEntry
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroymaterial/" class="sidebar-link">
-          destroyMaterial
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroymateriallist/" class="sidebar-link">
-          destroyMaterialList
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroymaterialquantity/" class="sidebar-link">
-          destroyMaterialQuantity
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroymileage/" class="sidebar-link">
-          destroyMileage
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroymiscellaneousjob/" class="sidebar-link">
-          destroyMiscellaneousJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroymua/" class="sidebar-link">
-          destroyMua
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroyoncall/" class="sidebar-link">
-          destroyOnCall
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroyotherassignment/" class="sidebar-link">
-          destroyOtherAssignment
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroyottawamaintenanceplan/" class="sidebar-link">
-          destroyOttawaMaintenancePlan
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroypaintingjob/" class="sidebar-link">
-          destroyPaintingJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroypermissionset/" class="sidebar-link">
-          destroyPermissionSet
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroypooldehumidification/" class="sidebar-link">
-          destroyPoolDehumidification
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroyportfolio/" class="sidebar-link">
-          destroyPortfolio
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroyproject/" class="sidebar-link">
-          destroyProject
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroypump/" class="sidebar-link">
-          destroyPump
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroysearchfilterpreset/" class="sidebar-link">
-          destroySearchFilterPreset
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroyserviceticket/" class="sidebar-link">
-          destroyServiceTicket
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroyshop/" class="sidebar-link">
-          destroyShop
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroystackcleaningjob/" class="sidebar-link">
-          destroyStackCleaningJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroystoragetank/" class="sidebar-link">
-          destroyStorageTank
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroytimesheet/" class="sidebar-link">
-          destroyTimesheet
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroytool/" class="sidebar-link">
-          destroyTool
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroytoolrepair/" class="sidebar-link">
-          destroyToolRepair
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroyuser/" class="sidebar-link">
-          destroyUser
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/destroyvehicle/" class="sidebar-link">
-          destroyVehicle
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/devicesignout/" class="sidebar-link">
-          deviceSignout
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/discardjobimport/" class="sidebar-link">
-          discardJobImport
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/enddebuglogin/" class="sidebar-link">
-          endDebugLogin
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/exportfiscal/" class="sidebar-link">
-          exportFiscal
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/favorite/" class="sidebar-link">
-          favorite
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/favoritebuildingfilterpreset/" class="sidebar-link">
-          favoriteBuildingFilterPreset
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/favoritesearchfilterpreset/" class="sidebar-link">
-          favoriteSearchFilterPreset
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/importcapexjob/" class="sidebar-link">
-          importCapexJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/importductcleaningjob/" class="sidebar-link">
-          importDuctCleaningJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/importflooringjob/" class="sidebar-link">
-          importFlooringJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/importjob/" class="sidebar-link">
-          importJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/importmiscellaneousjob/" class="sidebar-link">
-          importMiscellaneousJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/importpaintingjob/" class="sidebar-link">
-          importPaintingJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/importprojects/" class="sidebar-link">
-          importProjects
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/importstackcleaningjob/" class="sidebar-link">
-          importStackCleaningJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/importutilities/" class="sidebar-link">
-          importUtilities
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/initiatecredential/" class="sidebar-link">
-          initiateCredential
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/moveoncall/" class="sidebar-link">
-          moveOnCall
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/removefavorite/" class="sidebar-link">
-          removeFavorite
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/requestresetpassword/" class="sidebar-link">
-          requestResetPassword
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/resetpassword/" class="sidebar-link">
-          resetPassword
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/signintool/" class="sidebar-link">
-          signInTool
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/signouttool/" class="sidebar-link">
-          signOutTool
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/unfavoritebuildingfilterpreset/" class="sidebar-link">
-          unfavoriteBuildingFilterPreset
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/unfavoritesearchfilterpreset/" class="sidebar-link">
-          unfavoriteSearchFilterPreset
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updateboiler/" class="sidebar-link">
-          updateBoiler
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatebranch/" class="sidebar-link">
-          updateBranch
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatebuilding/" class="sidebar-link">
-          updateBuilding
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatebuildingamenity/" class="sidebar-link">
-          updateBuildingAmenity
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatebuildingbalconysystem/" class="sidebar-link">
-          updateBuildingBalconySystem
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatebuildingcontactinformation/" class="sidebar-link">
-          updateBuildingContactInformation
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatebuildingcontractinformation/" class="sidebar-link">
-          updateBuildingContractInformation
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatebuildingelectrical/" class="sidebar-link">
-          updateBuildingElectrical
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatebuildingelevator/" class="sidebar-link">
-          updateBuildingElevator
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatebuildingemergencypower/" class="sidebar-link">
-          updateBuildingEmergencyPower
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatebuildingfeature/" class="sidebar-link">
-          updateBuildingFeature
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatebuildingfilterpreset/" class="sidebar-link">
-          updateBuildingFilterPreset
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatebuildingfirealarmsystem/" class="sidebar-link">
-          updateBuildingFireAlarmSystem
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatebuildingheating/" class="sidebar-link">
-          updateBuildingHeating
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatebuildinglocate/" class="sidebar-link">
-          updateBuildingLocate
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatebuildingparking/" class="sidebar-link">
-          updateBuildingParking
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatebuildingroof/" class="sidebar-link">
-          updateBuildingRoof
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatebuildingstructure/" class="sidebar-link">
-          updateBuildingStructure
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatebuildingunit/" class="sidebar-link">
-          updateBuildingUnit
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatebuildingwindowanddoor/" class="sidebar-link">
-          updateBuildingWindowAndDoor
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatecapexjob/" class="sidebar-link">
-          updateCapexJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatecard/" class="sidebar-link">
-          updateCard
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatechiller/" class="sidebar-link">
-          updateChiller
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatecity/" class="sidebar-link">
-          updateCity
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatecoolingtower/" class="sidebar-link">
-          updateCoolingTower
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatedepartment/" class="sidebar-link">
-          updateDepartment
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatedocument/" class="sidebar-link">
-          updateDocument
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updateductcleaningjob/" class="sidebar-link">
-          updateDuctCleaningJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatefan/" class="sidebar-link">
-          updateFan
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatefiscal/" class="sidebar-link">
-          updateFiscal
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updateflooringjob/" class="sidebar-link">
-          updateFlooringJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updateforecast/" class="sidebar-link">
-          updateForecast
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updateihmddocument/" class="sidebar-link">
-          updateIhmdDocument
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatejobimportmapping/" class="sidebar-link">
-          updateJobImportMapping
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatejobimportmappings/" class="sidebar-link">
-          updateJobImportMappings
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatejobimportrow/" class="sidebar-link">
-          updateJobImportRow
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatejournal/" class="sidebar-link">
-          updateJournal
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatematerial/" class="sidebar-link">
-          updateMaterial
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatemateriallist/" class="sidebar-link">
-          updateMaterialList
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatematerialquantity/" class="sidebar-link">
-          updateMaterialQuantity
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatemileage/" class="sidebar-link">
-          updateMileage
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatemiscellaneousjob/" class="sidebar-link">
-          updateMiscellaneousJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatemua/" class="sidebar-link">
-          updateMua
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updateoncall/" class="sidebar-link">
-          updateOnCall
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updateotherassignment/" class="sidebar-link">
-          updateOtherAssignment
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updateottawamaintenanceplan/" class="sidebar-link">
-          updateOttawaMaintenancePlan
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatepaintingjob/" class="sidebar-link">
-          updatePaintingJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatepermissionset/" class="sidebar-link">
-          updatePermissionSet
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatepooldehumidification/" class="sidebar-link">
-          updatePoolDehumidification
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updateportfolio/" class="sidebar-link">
-          updatePortfolio
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updateproject/" class="sidebar-link">
-          updateProject
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatepump/" class="sidebar-link">
-          updatePump
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatesearchfilterpreset/" class="sidebar-link">
-          updateSearchFilterPreset
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updateserviceticket/" class="sidebar-link">
-          updateServiceTicket
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updateshop/" class="sidebar-link">
-          updateShop
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatestackcleaningjob/" class="sidebar-link">
-          updateStackCleaningJob
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatestoragetank/" class="sidebar-link">
-          updateStorageTank
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatetool/" class="sidebar-link">
-          updateTool
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatetoolrepair/" class="sidebar-link">
-          updateToolRepair
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updateuser/" class="sidebar-link">
-          updateUser
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updateuserpassword/" class="sidebar-link">
-          updateUserPassword
-        </a>
-      </li>
-      
-      
-      <li>
-        <a href="/pscdb-v2-docs/mutation/updatevehicle/" class="sidebar-link">
-          updateVehicle
         </a>
       </li>
       
@@ -8086,8 +9439,22 @@
       
       
       <li>
+        <a href="/pscdb-v2-docs/directive/oneof/" class="sidebar-link">
+          oneOf
+        </a>
+      </li>
+      
+      
+      <li>
         <a href="/pscdb-v2-docs/directive/skip/" class="sidebar-link">
           skip
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/pscdb-v2-docs/directive/specifiedby/" class="sidebar-link">
+          specifiedBy
         </a>
       </li>
       
@@ -8098,11 +9465,9 @@
       </div>
       <div id="content">
 
-        <h1>
-<a id="updatemiscellaneousjobinput" class="anchor" href="#updatemiscellaneousjobinput" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>UpdateMiscellaneousJobInput</h1>
+        <h1>UpdateMiscellaneousJobInput</h1>
 <p>Autogenerated input type of UpdateMiscellaneousJob</p>
-<h2>
-<a id="input-fields" class="anchor" href="#input-fields" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Input Fields</h2>
+<h2>Input Fields</h2>
 <div class="field-entry ">
   <span id="clientmutationid" class="field-name anchored">clientMutationId (<code><a href="/pscdb-v2-docs/scalar/string">String</a></code>)</span>
   <div class="description-wrapper">
